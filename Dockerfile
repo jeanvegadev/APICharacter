@@ -6,14 +6,19 @@ ENV PYTHONUNBUFFERED 1
 ENV FLASK_APP app.py
 
 # Set working directory
-WORKDIR /app
+RUN adduser -D myuser
+USER myuser
+WORKDIR /home/myuser
 
 # Install dependencies
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+COPY --chown=myuser:myuser requirements.txt requirements.txt
+# Upgrade pip and install the Python dependencies
+RUN python -m pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy the Flask project into the container
-COPY . /app/
+ENV PATH="/home/myuser/.local/bin:${PATH}"
+
+COPY --chown=myuser:myuser . .
 
 # Expose the port on which the app will run
 EXPOSE 5000
