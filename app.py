@@ -14,6 +14,8 @@ app.config['SWAGGER'] = {
     'specs_route': '/'
 }
 swagger_config = {
+    "swagger_ui": True,
+    "specs_route": "/apidocs/",
     "swagger": "2.0",
     "info": {
         "title": "Character API",
