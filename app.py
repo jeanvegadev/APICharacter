@@ -10,15 +10,18 @@ from flasgger import Swagger, swag_from
 Base.metadata.create_all(bind=engine)
 
 app = Flask(__name__)
-# Update the configuration for Flasgger
 app.config['SWAGGER'] = {
-    'title': 'Character API',
-    'uiversion': 3,
-    'openapi': '3.0.2',
-    'swagger_ui': True,
     'specs_route': '/'
 }
-swagger = Swagger(app)
+swagger_config = {
+    "swagger": "2.0",
+    "info": {
+        "title": "Character API",
+        "description": "API for managing characters",
+        "version": "1.0.0"
+    }
+}
+swagger = Swagger(app, template=swagger_config)
 
 
 # Dependencia para obtener la sesión de la base de datos
