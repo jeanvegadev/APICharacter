@@ -1,8 +1,9 @@
-FROM python:3.9
+# Use the official Python image from the Docker Hub
+FROM python:3.9-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV FLASK_APP app.py
 
 # Set working directory
 WORKDIR /app
@@ -11,14 +12,11 @@ WORKDIR /app
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entrypoint script into the container
-COPY entrypoint.sh /app/
-
-# Make the entrypoint script executable
-RUN chmod +x /app/entrypoint.sh
-
-# Copy the Django project into the container
+# Copy the Flask project into the container
 COPY . /app/
 
-# Set the entrypoint
-ENTRYPOINT ["/app/entrypoint.sh"]
+# Expose the port on which the app will run
+EXPOSE 5000
+
+# Command to run the Flask application
+CMD ["flask", "run", "--host=0.0.0.0"]
