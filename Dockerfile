@@ -6,7 +6,8 @@ ENV PYTHONUNBUFFERED 1
 ENV FLASK_APP app.py
 
 # Set working directory
-RUN adduser -D myuser
+# Create a non-root user and group
+RUN addgroup --system mygroup && adduser --system --group myuser
 USER myuser
 WORKDIR /home/myuser
 
