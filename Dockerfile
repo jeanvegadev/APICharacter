@@ -5,21 +5,17 @@ FROM python:3.9-slim
 ENV PYTHONUNBUFFERED 1
 ENV FLASK_APP app.py
 
-RUN python -m pip install --upgrade pip
 # Set working directory
-# Create a non-root user and group
-RUN addgroup --system mygroup && adduser --system --group myuser
-USER myuser
-WORKDIR /home/myuser
+WORKDIR /app
 
 # Install dependencies
-COPY --chown=myuser:myuser requirements.txt requirements.txt
+COPY requirements.txt /app/
 # Upgrade pip and install the Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python -m pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-ENV PATH="/home/myuser/.local/bin:${PATH}"
-
-COPY --chown=myuser:myuser . .
+# Copy the Flask project into the container
+COPY . /app/
 
 # Expose the port on which the app will run
 EXPOSE 5000
