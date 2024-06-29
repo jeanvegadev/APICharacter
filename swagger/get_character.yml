@@ -1,0 +1,30 @@
+parameters:
+  - name: character_id
+    in: path
+    type: integer
+    required: True
+    description: The ID of the character to retrieve
+responses:
+  200:
+    description: Character data
+    schema:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        height:
+          type: integer
+        mass:
+          type: integer
+        hair_color:
+          type: string
+        skin_color:
+          type: string
+        eye_color:
+          type: string
+        birth_year:
+          type: integer
+  400:
+    description: Character not found

@@ -1,0 +1,16 @@
+parameters:
+  - name: character_id
+    in: path
+    type: integer
+    required: True
+    description: The ID of the character to delete
+responses:
+  200:
+    description: Character deleted
+    schema:
+      type: object
+      properties:
+        info:
+          type: string
+  400:
+    description: Character not found

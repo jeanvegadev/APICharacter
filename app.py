@@ -4,11 +4,21 @@ from pydantic import ValidationError
 from database import engine, SessionLocal, Base
 import models
 import schemas
+from flasgger import Swagger, swag_from
 
 # Crear las tablas en la base de datos
 Base.metadata.create_all(bind=engine)
 
 app = Flask(__name__)
+# Update the configuration for Flasgger
+app.config['SWAGGER'] = {
+    'title': 'Character API',
+    'uiversion': 3,
+    'openapi': '3.0.2',
+    'swagger_ui': True,
+    'specs_route': '/'
+}
+swagger = Swagger(app)
 
 
 # Dependencia para obtener la sesión de la base de datos
@@ -21,6 +31,7 @@ def get_db():
 
 
 @app.route("/character/getAll", methods=["GET"])
+@swag_from('swagger/get_all_characters.yml')
 def read_characters():
     db: Session = next(get_db())
     characters = db.query(
@@ -36,16 +47,18 @@ def read_characters():
 
 
 @app.route("/character/get/<int:character_id>", methods=["GET"])
+@swag_from('swagger/get_character.yml')
 def read_character(character_id: int):
     db: Session = next(get_db())
     character = db.query(models.Character).filter(
                     models.Character.id == character_id).first()
     if character is None:
-        return jsonify({"error": "Character not found"}), 404
+        return jsonify({"error": "Character not found"}), 400
     return jsonify(schemas.Character.model_validate(character).model_dump())
 
 
 @app.route("/character/add", methods=["POST"])
+@swag_from('swagger/create_character.yml')
 def create_character():
     db: Session = next(get_db())
     character_data = request.get_json()
@@ -80,6 +93,7 @@ def create_character():
 
 
 @app.route("/character/delete/<int:character_id>", methods=["DELETE"])
+@swag_from('swagger/delete_character.yml')
 def delete_character(character_id: int):
     db: Session = next(get_db())
     character = db.query(models.Character).filter(

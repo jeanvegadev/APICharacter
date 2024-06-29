@@ -1,0 +1,20 @@
+responses:
+  200:
+    description: A list of characters
+    schema:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+          name:
+            type: string
+          height:
+            type: integer
+          mass:
+            type: integer
+          birth_year:
+            type: integer
+          eye_color:
+            type: string
