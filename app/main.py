@@ -1,10 +1,11 @@
 from flask import Flask, request, jsonify
 from sqlalchemy.orm import Session
 from pydantic import ValidationError
-from database import engine, SessionLocal, Base
-import models
-import schemas
+from .database import engine, SessionLocal, Base
+from . import models
+from . import schemas
 from flasgger import Swagger, swag_from
+import os
 
 # Crear las tablas en la base de datos
 Base.metadata.create_all(bind=engine)
@@ -26,7 +27,12 @@ swagger_config = {
     }
 }
 swagger = Swagger(app, template=swagger_config)
-
+# Define the relative path components
+swagger_folder = os.path.join(os.getcwd(), 'swagger')
+getall_path = os.path.join(swagger_folder, 'get_all_characters.yml')
+get_path = os.path.join(swagger_folder, 'get_character.yml')
+create_path = os.path.join(swagger_folder, 'create_character.yml')
+delete_path = os.path.join(swagger_folder, 'delete_character.yml')
 
 # Dependencia para obtener la sesión de la base de datos
 def get_db():
@@ -38,7 +44,7 @@ def get_db():
 
 
 @app.route("/character/getAll", methods=["GET"])
-@swag_from('swagger/get_all_characters.yml')
+@swag_from(getall_path)
 def read_characters():
     """
     Retrieve all characters from the database.
@@ -72,7 +78,7 @@ def read_characters():
 
 
 @app.route("/character/get/<int:character_id>", methods=["GET"])
-@swag_from('swagger/get_character.yml')
+@swag_from(get_path)
 def read_character(character_id: int):
     """
     Retrieve a specific character from the database based on the given character ID.
@@ -103,7 +109,7 @@ def read_character(character_id: int):
 
 
 @app.route("/character/add", methods=["POST"])
-@swag_from('swagger/create_character.yml')
+@swag_from(create_path)
 def create_character():
     """
     Create a new character in the database.
@@ -160,7 +166,7 @@ def create_character():
 
 
 @app.route("/character/delete/<int:character_id>", methods=["DELETE"])
-@swag_from('swagger/delete_character.yml')
+@swag_from(delete_path)
 def delete_character(character_id: int):
     """
     Delete a character from the database based on the given character ID.
