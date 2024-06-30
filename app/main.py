@@ -33,14 +33,14 @@ class CharacterAPI:
         self.app = app
         self.setup_routes()
         self.setup_swagger()
-        
+
 
     def setup_routes(self):
         self.app.add_url_rule('/character/getAll',
                               view_func=self.read_characters,
                               methods=['GET'])
         self.app.add_url_rule('/character/get/<int:character_id>',
-                              view_func=self.read_character, 
+                              view_func=self.read_character,
                               methods=['GET'])
         self.app.add_url_rule('/character/add',
                               view_func=self.create_character,
@@ -146,7 +146,8 @@ class CharacterAPI:
             db.close()
 
 
+app = Flask(__name__)
+character_api = CharacterAPI(app)
+
 if __name__ == '__main__':
-    app = Flask(__name__)
-    character_api = CharacterAPI(app)
     app.run(debug=True)
