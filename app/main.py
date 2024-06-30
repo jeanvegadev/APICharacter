@@ -14,6 +14,21 @@ Base.metadata.create_all(bind=engine)
 
 # Función para cargar rutas de archivos YAML de Swagger
 def load_swagger_paths():
+    """
+    Load the paths of YAML files for Swagger documentation.
+
+    Parameters:
+    None
+
+    Returns:
+    dict: A dictionary containing the paths of YAML files for each API
+    endpoint.
+
+    The paths are constructed using the current working directory
+    and the 'swagger' folder. The dictionary keys represent the API
+    endpoints (e.g., 'get_all', 'get', 'create', 'delete')
+    and the values are the corresponding paths to the YAML files.
+    """
     swagger_folder = os.path.join(os.getcwd(), 'swagger')
     paths = {
         'get_all': os.path.join(swagger_folder, 'get_all_characters.yml'),
@@ -30,12 +45,36 @@ path_swagger = load_swagger_paths()
 # Clase para definir la API de personajes
 class CharacterAPI:
     def __init__(self, app):
+        """
+        Initialize the CharacterAPI class with the provided Flask app instance.
+
+        Parameters:
+        app (Flask): The Flask app instance to which the API routes
+        will be added.
+
+        Returns:
+        None
+        """
         self.app = app
         self.setup_routes()
         self.setup_swagger()
 
-
     def setup_routes(self):
+        """
+        Set up the routes for the character API.
+
+        This method adds four URL rules to the Flask app instance.
+        Each rule corresponds
+        to a specific API endpoint for managing characters.
+        The view functions associated
+        with these endpoints are defined in the CharacterAPI class.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+        """
         self.app.add_url_rule('/character/getAll',
                               view_func=self.read_characters,
                               methods=['GET'])
@@ -50,6 +89,23 @@ class CharacterAPI:
                               methods=['DELETE'])
 
     def setup_swagger(self):
+        """
+        Set up Swagger documentation for the character API.
+
+        This method configures the Flask app to use Swagger
+        for API documentation.
+        It sets the specifications route, enables Swagger UI,
+        and provides basic information about the API.
+
+        Parameters:
+        None
+
+        Returns:
+        None
+
+        Raises:
+        None
+        """
         app.config['SWAGGER'] = {
             'specs_route': '/'
         }
@@ -68,6 +124,17 @@ class CharacterAPI:
     def read_characters(self):
         """
         Retrieve all characters from the database.
+
+        Parameters:
+        None
+
+        Returns:
+        JSON: A JSON response containing an array of character objects.
+        Each character object has the following properties:
+        id, name, height, mass, birth_year, and eye_color.
+
+        Raises:
+        None
         """
         db: Session = next(self.get_db())
         characters = db.query(
@@ -77,24 +144,51 @@ class CharacterAPI:
             models.Character.mass,
             models.Character.birth_year,
             models.Character.eye_color).all()
-        return jsonify([schemas.GetAll.model_validate(character).model_dump() for character in characters])
+        return jsonify([schemas.GetAll.model_validate(
+                    character).model_dump() for character in characters])
 
     @swag_from(path_swagger['get'])
     def read_character(self, character_id: int):
         """
-        Retrieve a specific character from the database based on the given character ID.
+        Retrieve a character from the database based on the given character ID.
+
+        Parameters:
+        character_id (int): The unique identifier of the character to retrieve.
+
+        Returns:
+        JSON: A JSON response containing the details of the character if found.
+        If the character is not found, a JSON response with an error message
+        is returned.
+
+        Raises:
+        None
         """
         db: Session = next(self.get_db())
         character = db.query(models.Character).filter(
             models.Character.id == character_id).first()
         if character is None:
             return jsonify({"error": "Character not found"}), 400
-        return jsonify(schemas.Character.model_validate(character).model_dump())
+        return jsonify(schemas.Character.model_validate(
+                        character).model_dump())
 
     @swag_from(path_swagger['create'])
     def create_character(self):
         """
         Create a new character in the database.
+
+        Parameters:
+        None
+
+        Returns:
+        JSON: A JSON response containing the created character's details
+        if successful.
+        If the character already exists, returns a JSON response
+        with an error message.
+        If there are validation errors, returns a JSON response
+        with the errors.
+
+        Raises:
+        None
         """
         db: Session = next(self.get_db())
         character_data = request.get_json()
@@ -126,6 +220,17 @@ class CharacterAPI:
     def delete_character(self, character_id: int):
         """
         Delete a character from the database based on the given character ID.
+
+        Parameters:
+        character_id (int): The unique identifier of the character to delete.
+
+        Returns:
+        JSON: A JSON response indicating the success of the operation.
+        If the character is not found, returns a JSON response
+        with an error message.
+
+        Raises:
+        None
         """
         db: Session = next(self.get_db())
         character = db.query(models.Character).filter(
@@ -139,6 +244,26 @@ class CharacterAPI:
 
     # Dependencia para obtener la sesion de la base de datos
     def get_db(self):
+        """
+        Context manager for handling database sessions.
+
+        This function uses Python's context management protocol
+        (the 'with' statement)
+        to ensure that the database session is properly closed
+        after it is no longer needed.
+        This is important to prevent database connection leaks
+        and to maintain good database performance.
+
+        Parameters:
+        None
+
+        Returns:
+        Session: A database session object that can be used
+        to interact with the database.
+
+        Raises:
+        None
+        """
         db = SessionLocal()
         try:
             yield db
