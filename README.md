@@ -51,4 +51,13 @@ You can find detailed offline documentation in the `api-documentation.pdf` file 
 
 Once the API is running, you can access the online Swagger documentation by navigating to the root path (`/`) in your browser.
 
----
+# Test the API
+
+To facilitate testing the API, a Postman collection is available.
+
+## Postman Collection
+
+- **File:** `Character_api.postman_collection.json`
+- **Location:** `docs` folder
+
+You can import this collection into Postman to easily test and interact with the API endpoints.
