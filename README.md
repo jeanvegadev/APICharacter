@@ -31,7 +31,7 @@ venv\Scripts\activate
 Run the app.py
 
 ```py
-python app/main.py
+python -m app.main
 ```
 
 # Documentation
