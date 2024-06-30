@@ -3,7 +3,7 @@ FROM python:3.9-slim
 
 # Set environment variables
 ENV PYTHONUNBUFFERED 1
-ENV FLASK_APP app.py
+ENV FLASK_APP app.main
 
 # Set working directory
 WORKDIR /app
