@@ -10,6 +10,8 @@ from flasgger import Swagger, swag_from
 Base.metadata.create_all(bind=engine)
 
 app = Flask(__name__)
+
+# Swagger configuration
 app.config['SWAGGER'] = {
     'specs_route': '/'
 }
@@ -38,6 +40,24 @@ def get_db():
 @app.route("/character/getAll", methods=["GET"])
 @swag_from('swagger/get_all_characters.yml')
 def read_characters():
+    """
+    Retrieve all characters from the database.
+
+    Parameters:
+    None
+
+    Returns:
+    JSON: A list of dictionaries, each representing a character with the following keys:
+        - id: The unique identifier of the character.
+        - name: The name of the character.
+        - height: The height of the character.
+        - mass: The mass of the character.
+        - birth_year: The birth year of the character.
+        - eye_color: The eye color of the character.
+
+    Raises:
+    None
+    """
     db: Session = next(get_db())
     characters = db.query(
                         models.Character.id,
@@ -54,6 +74,26 @@ def read_characters():
 @app.route("/character/get/<int:character_id>", methods=["GET"])
 @swag_from('swagger/get_character.yml')
 def read_character(character_id: int):
+    """
+    Retrieve a specific character from the database based on the given character ID.
+
+    Parameters:
+    character_id (int): The unique identifier of the character to retrieve.
+
+    Returns:
+    JSON: A dictionary representing the character with the following keys:
+        - id: The unique identifier of the character.
+        - name: The name of the character.
+        - height: The height of the character.
+        - mass: The mass of the character.
+        - hair_color: The hair color of the character.
+        - skin_color: The skin color of the character.
+        - birth_year: The birth year of the character.
+        - eye_color: The eye color of the character.
+
+    Raises:
+    HTTP 400: If the character with the given ID is not found in the database.
+    """
     db: Session = next(get_db())
     character = db.query(models.Character).filter(
                     models.Character.id == character_id).first()
@@ -65,6 +105,28 @@ def read_character(character_id: int):
 @app.route("/character/add", methods=["POST"])
 @swag_from('swagger/create_character.yml')
 def create_character():
+    """
+    Create a new character in the database.
+
+    Parameters:
+    - request: The incoming request object containing the character data in JSON format.
+
+    Returns:
+    - JSON: A dictionary representing the created character with the following keys:
+        - id: The unique identifier of the character.
+        - name: The name of the character.
+        - height: The height of the character.
+        - mass: The mass of the character.
+        - hair_color: The hair color of the character.
+        - skin_color: The skin color of the character.
+        - birth_year: The birth year of the character.
+        - eye_color: The eye color of the character.
+    - HTTP 201: If the character is successfully created.
+    - HTTP 400: If the character with the given ID already exists or if the input data is invalid.
+
+    Raises:
+    - ValidationError: If the input data is invalid according to the Pydantic schema.
+    """
     db: Session = next(get_db())
     character_data = request.get_json()
     try:
@@ -100,6 +162,20 @@ def create_character():
 @app.route("/character/delete/<int:character_id>", methods=["DELETE"])
 @swag_from('swagger/delete_character.yml')
 def delete_character(character_id: int):
+    """
+    Delete a character from the database based on the given character ID.
+
+    Parameters:
+    character_id (int): The unique identifier of the character to delete.
+
+    Returns:
+    JSON: A dictionary containing an information message.
+        - info: A message indicating the successful deletion of the character.
+
+    Raises:
+    HTTP 400: If the character with the given ID is not found in the database.
+
+    """
     db: Session = next(get_db())
     character = db.query(models.Character).filter(
                     models.Character.id == character_id).first()
